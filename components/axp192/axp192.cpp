@@ -242,17 +242,21 @@ void AXP192Component::UpdateBrightness()
       }
         case AXP192_M5TOUGH:
         {
-            // Map brightness (0.0–1.0) to 2500–3300 mV
-            const uint16_t min_mv = 2500;
-            const uint16_t max_mv = 3300;
+            // LDO3 voltage: 2.5V (0000) to 3.3V (1000) in 0.1V steps, stored in bits 3–6 of register 0x27
+            const uint8_t min_val = 0;     // 2.5V
+            const uint8_t max_val = 8;     // 3.3V
 
-            if (brightness_ <= 0.01f) {
-                SetLDO3(false);  // Turn off LDO3 to disable backlight
-            } else {
-                SetLDO3(true);  // Ensure LDO3 is on
-                uint16_t voltage_mv = static_cast<uint16_t>(min_mv + brightness_ * (max_mv - min_mv));
-                axp.setLDO3Voltage(voltage_mv);  // Adjust LDO3 voltage
-            }
+            // Convert brightness (0.0–1.0) to LDO3 voltage index (0–8)
+            uint8_t index = static_cast<uint8_t>(brightness_ * (max_val - min_val));
+            if (index > max_val) index = max_val;
+
+            // LDO3 voltage bits go in bits 3–6 of register 0x27
+            uint8_t buf = Read8bit(0x27);
+            buf = (buf & 0x87) | (index << 3);  // Keep bits 0–2 and 7, update bits 3–6
+            Write1Byte(0x27, buf);
+
+            // Optionally disable LDO3 if brightness is 0
+            SetLDO3(brightness_ > 0.01f);
             break;
         }
     }
