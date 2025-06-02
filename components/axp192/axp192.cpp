@@ -242,12 +242,6 @@ void AXP192Component::UpdateBrightness()
       }
       case AXP192_M5TOUGH:
       {
-        const uint8_t c_min = 7;   // = 1.6V
-        const uint8_t c_max = 24;  // = 3.3V
-    
-        auto bri = c_min + static_cast<uint8_t>(brightness_ * (c_max - c_min));
-        if (bri > c_max) bri = c_max;
-    
         uint8_t buf = Read8bit(0x28);
         uint8_t ldo2 = buf & 0xF0;             // Preserve LDO2 voltage (upper nibble)
         uint8_t new_val = ldo2 | (bri & 0x0F); // Set LDO3 voltage (lower nibble)
