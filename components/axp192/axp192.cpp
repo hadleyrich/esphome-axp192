@@ -244,7 +244,7 @@ void AXP192Component::UpdateBrightness()
       {
         uint8_t buf = Read8bit(0x28);
         uint8_t ldo2 = buf & 0xF0;             // Preserve LDO2 voltage (upper nibble)
-        uint8_t new_val = ldo2 | (bri & 0x0F); // Set LDO3 voltage (lower nibble)
+        uint8_t new_val = ldo2 | (ubri & 0x0F); // Set LDO3 voltage (lower nibble)
         Write1Byte(0x28, new_val);
 
         if (brightness_ == 0) {
