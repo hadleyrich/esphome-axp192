@@ -240,15 +240,18 @@ void AXP192Component::UpdateBrightness()
         Write1Byte( 0x27 , ((buf & 0x80) | (ubri << 3)) );
         break;
       }
-        case AXP192_M5TOUGH:
-        {
-            uint8_t buf = Read8bit( 0x28 );
-            Write1Byte( 0x28 , ((buf & 0x0f) | (ubri << 4)) );
-
-            // Optionally disable LDO3 if brightness is 0
-            SetLDO3(brightness_ > 0.01f);
-            break;
+      case AXP192_M5TOUGH:
+      {
+        uint8_t buf = Read8bit( 0x28 );
+        Write1Byte( 0x28 , ((buf & 0x0f) | (ubri << 4)) );
+        Write1Byte( 0x27 , ((buf & 0x80) | (ubri << 3)) );
+        if (brightness_ == 0) {
+            SetLDO2(false);
+        } else {
+            SetLDO2(true);
         }
+        break;
+      }
     }
 }
 
