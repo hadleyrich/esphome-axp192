@@ -246,9 +246,9 @@ void AXP192Component::UpdateBrightness()
         Write1Byte( 0x28 , ((buf & 0x0f) | (ubri << 4)) );
         Write1Byte( 0x27 , ((buf & 0x80) | (ubri << 3)) );
         if (brightness_ == 0) {
-            SetLDO2(false);
+            SetLDO3(false);
         } else {
-            SetLDO2(true);
+            SetLDO3(true);
         }
         break;
       }
